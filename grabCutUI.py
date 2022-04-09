@@ -1,7 +1,6 @@
 import tkinter
 import numpy as np
 import cv2 as cv
-#from matplotlib import image, pyplot as plt # For demo plot version
 from tkinter import filedialog
 from tkinter import *
 
@@ -14,7 +13,7 @@ class grabCutApp():
     selecting = False        # Flag for rectangle selecting
     doneSelecting = False    # Flag for done selecting
 
-    # User-drawn rectangle
+    # User-drawn rectangle for selection
     def select_object(self, event, x, y, flags, param):
 
         if event == cv.EVENT_LBUTTONDOWN:
@@ -51,7 +50,7 @@ class grabCutApp():
 
         self.refImg = self.imgIn.copy() # Copy of image for algorithm use
 
-        # Windows
+        # Windows for Image Selection & Preview
         cv.namedWindow("Image Selection")
         cv.namedWindow("Preview")
         cv.setMouseCallback("Image Selection", self.select_object)
@@ -61,9 +60,8 @@ class grabCutApp():
 
         # Program loop
         while(1):
-            if(self.selecting==False):
-                cv.imshow("Image Selection", self.imgIn)
-                cv.imshow("Preview", self.imgOut)
+            cv.imshow("Image Selection", self.imgIn)
+            cv.imshow("Preview", self.imgOut)
             input = cv.waitKey(1) # Note. Since the keycode used is assumed to be Windows, this will only work on Windows
 
             if (input == 13): # ENTER key on Windows
@@ -90,8 +88,6 @@ class grabCutApp():
         # Outputs to local directory as "cutImage.png"
         cv.imwrite("./cutImage.png", self.imgOut)
 
-        # Plot version from demo
-        #plt.imshow(self.imgOut),plt.colorbar(),plt.show()
 
 grabCutApp().run()
 cv.destroyAllWindows()
