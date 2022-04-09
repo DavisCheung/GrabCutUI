@@ -9,9 +9,8 @@ class grabCutApp():
     GREEN = [0,255,0]
 
     # Initialization
-    selection = (0,0,1,1)
-    selecting = False        # Flag for rectangle selecting
-    doneSelecting = False    # Flag for done selecting
+    selection = (0,0,1,1)    # Rectangle for selectiong
+    selecting = False        # Flag for selection
 
     # User-drawn rectangle for selection
     def select_object(self, event, x, y, flags, param):
@@ -30,11 +29,10 @@ class grabCutApp():
 
         elif event == cv.EVENT_LBUTTONUP:
             self.selecting = False
-            self.doneSelecting = True
             cv.rectangle(self.imgIn, (self.xPos, self.yPos), (x, y), self.GREEN, 1)
             self.selection = (min(self.xPos, x), min(self.yPos, y), abs(self.xPos - x), abs(self.yPos - y))
 
-
+    # The app itself
     def run(self):
         print("Greetings! Please select an image.")
         print("Note that large images may be hard to edit with this app.\n")
