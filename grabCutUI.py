@@ -38,10 +38,11 @@ class grabCutApp():
 
     def run(self):
         print("Greetings! Please select an image.")
+        print("Note that large images may be hard to edit with this app.\n")
 
         # File selection
         self.root = tkinter.Tk()
-        self.imgname = filedialog.askopenfilename(parent=self.root,initialdir="./",title='Please select an image', filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")])
+        self.imgname = filedialog.askopenfilename(parent=self.root,initialdir="./Test_Images",title='Please select an image', filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")])
 
         # Sets image to the selected file; initializes a blank mask of same dimensions
         self.imgIn = cv.imread(self.imgname) # Copy of image to use in selection
@@ -55,8 +56,8 @@ class grabCutApp():
         cv.namedWindow("Preview")
         cv.setMouseCallback("Image Selection", self.select_object)
 
-        print("Please draw a rectangle around the object you wish to cut-out \n")
-        print("After you are done, please press enter \n")
+        print("Please draw a rectangle around the object you wish to cut-out.")
+        print("After you are finished with your selection, please press enter.\n")
 
         # Program loop
         while(1):
