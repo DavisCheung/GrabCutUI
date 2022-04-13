@@ -5,7 +5,7 @@ from tkinter import filedialog
 from tkinter import *
 
 
-class grabCutApp():
+class GrabCutApp():
     GREEN = [0,255,0]
 
     # Initialization
@@ -39,7 +39,11 @@ class grabCutApp():
 
         # File selection
         self.root = tkinter.Tk()
-        self.imgname = filedialog.askopenfilename(parent=self.root,initialdir="./Test_Images",title='Please select an image', filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")])
+        self.imgname = filedialog.askopenfilename(parent=self.root,
+            initialdir="./Test_Images",
+            title='Please select an image', 
+            filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")]
+        )
 
         # Sets image to the selected file; initializes a blank mask of same dimensions
         self.imgIn = cv.imread(self.imgname) # Copy of image to use in selection
@@ -87,5 +91,5 @@ class grabCutApp():
         cv.imwrite("./cutImage.png", self.imgOut)
 
 
-grabCutApp().run()
+GrabCutApp().run()
 cv.destroyAllWindows()
