@@ -1,4 +1,4 @@
-# grabCutUI
+# GrabCutUI
  Simple application that uses the Grabcut algorithm in OpenCV to remove the background of an image.
 
 ## Introduction
