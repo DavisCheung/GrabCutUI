@@ -24,13 +24,15 @@ class GrabCutApp():
             if self.selecting == True:
                 self.imgIn = self.refImg.copy()
                 cv.rectangle(self.imgIn, (self.xPos, self.yPos), (x, y), self.GREEN, 1)
-                self.selection = (min(self.xPos, x), min(self.yPos, y), abs(self.xPos - x), abs(self.yPos - y))
+                self.selection = (min(self.xPos, x), min(self.yPos, y), 
+                                  abs(self.xPos - x), abs(self.yPos - y))
 
 
         elif event == cv.EVENT_LBUTTONUP:
             self.selecting = False
             cv.rectangle(self.imgIn, (self.xPos, self.yPos), (x, y), self.GREEN, 1)
-            self.selection = (min(self.xPos, x), min(self.yPos, y), abs(self.xPos - x), abs(self.yPos - y))
+            self.selection = (min(self.xPos, x), min(self.yPos, y), 
+                              abs(self.xPos - x), abs(self.yPos - y))
 
     # The app itself
     def run(self):
@@ -42,8 +44,7 @@ class GrabCutApp():
         self.imgname = filedialog.askopenfilename(parent=self.root,
             initialdir="./Test_Images",
             title='Please select an image', 
-            filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")]
-        )
+            filetypes=[("Images", ["*.png", "*.jpg", "*.jpeg"]), ("all files", "*.*")])
 
         # Sets image to the selected file; initializes a blank mask of same dimensions
         self.imgIn = cv.imread(self.imgname) # Copy of image to use in selection
@@ -64,7 +65,7 @@ class GrabCutApp():
         while(1):
             cv.imshow("Image Selection", self.imgIn)
             cv.imshow("Preview", self.imgOut)
-            input = cv.waitKey(1) # Note. Since the keycode used is assumed to be Windows, this will only work on Windows
+            input = cv.waitKey(1) # Note. Since the keycode used is assumed to be Windows, this may only work on Windows
 
             if (input == 13): # ENTER key on Windows
                 try:
@@ -75,21 +76,22 @@ class GrabCutApp():
                     # Number of algorithm iterations desired
                     iter = 5
 
-                    cv.grabCut(self.refImg,self.mask,self.selection,bgdModel,fgdModel,iter,cv.GC_INIT_WITH_RECT)
+                    cv.grabCut(self.refImg, self.mask,
+                               self.selection, bgdModel,
+                               fgdModel, iter,
+                               cv.GC_INIT_WITH_RECT)
                 except:
                     import traceback
                     traceback.print_exc()
 
-
             mask2 = np.where((self.mask==2)|(self.mask==0),0,1).astype('uint8')
             self.imgOut = self.refImg*mask2[:,:,np.newaxis]
 
-            if (input == 27): # ESC on Windows
+            if (input == 27): # ESC on Windows - this will exit the program and save the image to the local directory
                 break
 
         # Outputs to local directory as "cutImage.png"
         cv.imwrite("./cutImage.png", self.imgOut)
-
 
 GrabCutApp().run()
 cv.destroyAllWindows()
