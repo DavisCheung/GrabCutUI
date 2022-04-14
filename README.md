@@ -13,7 +13,9 @@ This project used:
 Note. This app may not work on non-windows operating systems, but this has not been tested.
 
 ## How to use
-To run this project, ensure that the above packages are installed, clone the repo, and run grabCutUI.py.
+To run this project, ensure that the above packages are installed, clone the repo, and run:
+
+> python GrabCutUI.py
 
 - When the program runs, it will immediately open your file explorer to the "./Test_Images" directory and wait until an image file is selected (.png, .jpg, or .jpeg).
 
@@ -33,7 +35,7 @@ To run this project, ensure that the above packages are installed, clone the rep
 
 - You may re-select the rectangular bounds and press ENTER again to re-process the new selection.
 
-- To close the app, press the ESC key - this will also save a copy of the cropped image into the local directory as "cutImage.png" (Functionally, this means that this program could also be used to covnert any image to a .png if you so desire)
+- To close the app, press the ESC key - this will also save a copy of the cropped image into the local directory as "cutImage.png" (Functionally, this means that this program could also be used to convert any image to a .png if you so desire)
 
 [Final Image Example](./readmepics/nice.png)
 
