@@ -6,11 +6,11 @@ from tkinter import *
 
 
 class GrabCutApp():
-    GREEN = [0,255,0]
+    GREEN: list[int] = [0,255,0]
 
     # Initialization
-    selection = (0,0,1,1)    # Rectangle for selectiong
-    selecting = False        # Flag for selection
+    selection: tuple[int] = (0,0,1,1)    # Rectangle for selectiong
+    selecting: bool = False        # Flag for selection
 
     # User-drawn rectangle for selection
     def select_object(self, event, x, y, flags, param):
