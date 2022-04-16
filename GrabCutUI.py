@@ -1,12 +1,22 @@
+from multiprocessing import Process
+import os
 import tkinter
 import numpy as np
 import cv2 as cv
 from tkinter import filedialog
 from tkinter import *
-from flask import Flask
+from flask import Flask, flash, request, make_response, redirect, url_for, send_from_directory
+from werkzeug.utils import secure_filename
+import tempfile
+
+# TO SELF - ADJUST TO SAVE TEMPORARILY LATER
+UPLOAD_FOLDER = 'uploads/'
+ALLOWED_EXTENSIONS = set (["png", "jpg", "jpeg"])
 
 app = Flask(__name__)
-@app.route("/")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+
 class GrabCutApp:
     GREEN: list[int] = [0, 255, 0]
 
@@ -112,6 +122,90 @@ class GrabCutApp:
         # Outputs cut image to local directory as "cutImage.png"
         cv.imwrite("./cutImage.png", self.img_out)
 
+# Check for allowed filenames
+def allowed_file(filename):
+    return "." in filename and \
+        filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-GrabCutApp().run()
-cv.destroyAllWindows()
+def background_remove(path):
+    task = Process(target=rm(path))
+    task.start()
+
+def rm(path):
+    os.remove(path)
+
+@app.route("/", methods =["GET", "POST"])
+def upload_file():
+    if request.method == "POST":
+         # Check if post request has the file part
+        if "file" not in request.files:
+            flash("No file part")
+            return redirect(request.url)
+        file = request.files["file"]
+        # Submits empty part w/o filename
+        if file.filename == "":
+            flash("No selected file")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            temp_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(temp_path)
+            img_test = cv.imread(temp_path)
+            retval, buffer = cv.imencode(".png", img_test)
+            response = make_response(buffer.tobytes())
+            response.headers["Content-Type"] = "image/png"
+            background_remove(temp_path)  # Deletes file after processing
+            return response
+    return '''
+        <!doctype html>
+        <title>Upload new File</title>
+        <h1>Upload new File</h1>
+        <form method=post enctype=multipart/form-data>
+            <p><input type=file name=file>
+               <input type=submit value=Upload>
+        </form>
+    '''
+
+
+
+
+'''
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"],
+                               filename)
+
+@app.route("/", methods =["GET", "POST"])
+def upload_file():
+    if request.method == "POST":
+        # Check if post request has the file part
+        if "file" not in request.files:
+            flash("No file part")
+            return redirect(request.url)
+        file = request.files["file"]
+        # Submits empty part w/o filename
+        if file.filename == "":
+            flash("No selected file")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            #img_test = cv.imread(file)
+            #retval, buffer = cv.imencode(".png", img_test)
+            #response = make_response(buffer.tobytes())
+            #response.headers["Content-Type"] = "image/png"
+            #return response
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            return redirect(url_for("uploaded_file", filename=filename))
+    return #Add tiple quotes to make usable again
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+        <p><input type=file name=file>
+           <input type=submit value=Upload>
+    </form>
+    
+'''
+
+#GrabCutApp().run()
+#cv.destroyAllWindows()
