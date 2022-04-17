@@ -114,5 +114,6 @@ def preview():
 
 @app.route("/download")
 def download():
-    path = os.path.join("static/uploads/", OUTPUT_NAME)
-    return send_file(path, as_attachment=True)
+    if exists(os.path.join("static/uploads/", OUTPUT_NAME)):
+        path = os.path.join("static/uploads/", OUTPUT_NAME)
+        return send_file(path, as_attachment=True)
