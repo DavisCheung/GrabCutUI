@@ -1,4 +1,9 @@
 // Taken from script-tutorials.com. Adjusted for GrabCutWeb.
+//  Added a function to return selection values by jQuery
+//  Made input image path a constant
+
+const INPUT_IMG_SRC = '../static/uploads/input_image.png';
+
 // variables
 var canvas, ctx;
 var image;
@@ -50,7 +55,7 @@ $(function(){
     image = new Image();
     image.onload = function () {
     }
-    image.src = '../static/uploads/input_image.png';
+    image.src = INPUT_IMG_SRC;
     // creating canvas and context objects
     canvas = document.getElementById('selection');
     ctx = canvas.getContext('2d');
@@ -167,7 +172,8 @@ $(function(){
     drawScene();
 });
 
-// Return selection values by post request
+// Return selection values by post request to preview page
+// Refresh preview page to update output image
 function returnSelection(){
     $.ajax({
         async: false,
