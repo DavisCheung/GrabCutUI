@@ -54,7 +54,7 @@
   Querying and sessioning enable the project to send information between the front/back-end and store user information between requests, respectively. They're pretty interesting bits of web technology that is taken for granted today.
   
  ### The HTML files
-  Pretty simple. Nothing special, except a coupe forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
+  Pretty simple. Nothing special, except a couple forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
   
  ### Selection.js
   This file is responsible for enabling user creation of a selection frame, as well as the sending of jQuery data to the front-end by JSON. Much of the code was based on a tutorial file (source at bottom) with a number of modifications to ensure that it functioned with the rest of the code. The selection function in the original GrabCutUI.py was used as a reference to ensure that it didn't break anything.
