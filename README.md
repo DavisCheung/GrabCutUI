@@ -6,11 +6,12 @@
  This project was made to showcase a simple implementation of the OpenCV GrabCut algorithm using Flask.
  
 ## Technologies
-The following languages/scripts were needed to make this project:
+ The following languages/scripts were needed to make this project:
 - JavaScript
 - Python
 - HTML
-The following API's were used:
+
+ The following API's were used:
 - jQuery
 - OpenCV
 - Flask
