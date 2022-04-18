@@ -35,7 +35,7 @@
 
 ## The Project, but with Feeling
  Here, I'll explain the project in-depth by file
-# GrabCutUI.py
+### GrabCutUI.py
  This is the original project, what used to be a simple python script (still in the code, just commented out) that built a simple OpenCV UI out of the demo (source at bottom) for GrabCut on the OpenCV wiki. Basically it:
  - Takes in an image and selection frame
  - Generates a masking layer (like what you use in Photoshop)
@@ -49,14 +49,14 @@
  This mask can then be multiplied via scalar multiplication with the original image to produce the new, "cut-out" image.
  Of course, a lot of the high-level concepts (and subsequently much of the actual meat of the algorithm) is hidden in the paper behind complex equations, but the general idea is pretty interesting
  
- # GrabCutWeb.py
+ ### GrabCutWeb.py
   This file contains all of the Flask API calls for all intents and purposes is basically the App itself. It's responsible for taking in user uploads, storing them in memory/session, and converting them to an array format usable by OpenCV. It also routes page requests and handles jQuery requests and sends Jinja variables to the two HTML pages for front-end use.
   Querying and sessioning enable the project to send information between the front/back-end and store user information between requests, respectively.
   
- # The HTML files
+ ### The HTML files
   Pretty simple. Nothing special, except a coupe forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
   
- # Selection.js
+ ### Selection.js
   This file is responsible for enabling user creation of a selection frame, as well as the sending of jQuery data to the front-end by JSON. Much of the code was based on a tutorial file (source at bottom) with a number of modifications to ensure that it functioned with the rest of the code. The selection function in the original GrabCutUI.py was used as a reference to ensure that it didn't break anything.
  
 
