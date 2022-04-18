@@ -195,5 +195,5 @@ function returnSelection(){
             console.log(err);
         }
     });
-    document.location.href="/"
+    // document.location.href="/"
 }
