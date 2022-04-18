@@ -26,7 +26,7 @@ INPUT_NAME = "input_image.png"
 OUTPUT_NAME = "output_image.png"
 
 app = Flask(__name__)
-app.secret_key = "1738thek3y"
+app.secret_key = "1738thek1y"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SESSION_TYPE"] = "filesystem"
@@ -96,34 +96,33 @@ def upload_file():
             h_sel = int(request.form["hSel"])
             session["selection"] = (x_pos, y_pos, w_sel, h_sel)
             return "Got pos values"
+    elif session.get("input_file") != None:
+        # Open input image, convert to array, run it through algorithm
+        img_in = session["input_file"]
+        mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
+        selection = session["selection"]
+        session["input_file"] = None
+        mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
+        # Convert output back to PIL Image
+        mat_out = cv.cvtColor(mat_out, cv.COLOR_BGR2RGB)
+        img_out = Image.fromarray(mat_out)
+        out_data = io.BytesIO()
+        img_out.save(out_data, "png")
+        encoded_output = base64.b64encode(out_data.getvalue())
+
+        # Get encoded input
+        in_data = io.BytesIO()
+        img_in.save(in_data, "png")
+        encoded_image = base64.b64encode(in_data.getvalue())
+        img_width = img_in.width
+        img_height = img_in.height
+
+        # For download
+        session["output_img"] = img_out
+        return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
     else:
         print("no file")
         return render_template("index.html")
-
-@app.route("/preview")
-def preview():
-    # Open input image, convert to array, run it through algorithm
-    img_in = session["input_file"]
-    mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
-    selection = session["selection"]
-    mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
-    # Convert output back to PIL Image
-    mat_out = cv.cvtColor(mat_out, cv.COLOR_BGR2RGB)
-    img_out = Image.fromarray(mat_out)
-    out_data = io.BytesIO()
-    img_out.save(out_data, "png")
-    encoded_output = base64.b64encode(out_data.getvalue())
-
-    # Get encoded input
-    in_data = io.BytesIO()
-    img_in.save(in_data, "png")
-    encoded_image = base64.b64encode(in_data.getvalue())
-    img_width = img_in.width
-    img_height = img_in.height
-
-    # For download
-    session["output_img"] = img_out
-    return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
 
 @app.route("/download")
 def download():
