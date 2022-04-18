@@ -8,7 +8,7 @@
  Interesting concepts explored include image manipulation, sessioning, querying, and user interaction.
  
 ## How to use
- To run this project simply go to: http://www.grabcutweb.xyz/ or https://shrouded-woodland-29734.herokuapp.com/
+ To run this project simply go to: http://www.grabcutweb.xyz/
  
 ## A Summary of Things Learned
  TL;DR:
