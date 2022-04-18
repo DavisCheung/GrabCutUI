@@ -5,8 +5,9 @@ itsdangerous
 Jinja2
 MarkupSafe
 numpy
-opencv-python
+opencv-python-headless==4.5.5.64
 Pillow
 pip
 setuptools
 Werkzeug
+gunicorn

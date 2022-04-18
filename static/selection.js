@@ -2,7 +2,7 @@
 //  Added a function to return selection values by jQuery
 //  Made input image path a constant
 
-const INPUT_IMG_SRC = '../static/uploads/input_image.png';
+// const INPUT_IMG_SRC = 'data:image/png;base64,{{ img_data }}';
 
 // variables
 var canvas, ctx;
@@ -55,7 +55,9 @@ $(function(){
     image = new Image();
     image.onload = function () {
     }
-    image.src = INPUT_IMG_SRC;
+    image.src = document.getElementById('selection').className; // An abosolutely disgustingly hacky way to pass a Jinja variable.
+                                                                // If you are a prospective employer reading this, it's VERY EARLY in the morning
+                                                                // and I am about to lose my mind passing an image through JS to a canvas
     // creating canvas and context objects
     canvas = document.getElementById('selection');
     ctx = canvas.getContext('2d');
@@ -178,7 +180,7 @@ function returnSelection(){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/preview",
+        url: "/",
         data: {
             "xPos": theSelection.x,
             "yPos": theSelection.y,
@@ -193,5 +195,5 @@ function returnSelection(){
             console.log(err);
         }
     });
-    document.location.href="/preview"
+    document.location.href="/"
 }
