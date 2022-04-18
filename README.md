@@ -50,8 +50,8 @@
  Of course, a lot of the high-level concepts (and subsequently much of the actual meat of the algorithm) is hidden in the paper behind complex equations, but the general idea is pretty interesting
  
  ### GrabCutWeb.py
-  This file contains all of the Flask API calls for all intents and purposes is basically the App itself. It's responsible for taking in user uploads, storing them in memory/session, and converting them to an array format usable by OpenCV. It also routes page requests and handles jQuery requests and sends Jinja variables to the two HTML pages for front-end use.
-  Querying and sessioning enable the project to send information between the front/back-end and store user information between requests, respectively.
+  This file contains all of the Flask API calls for all intents and purposes is basically the App itself. It's responsible for taking in user uploads, storing them in memory/session, and converting them to an array format usable by OpenCV. It also routes page requests, handles jQuery requests, and sends Jinja variables to the two HTML pages for front-end use.
+  Querying and sessioning enable the project to send information between the front/back-end and store user information between requests, respectively. They're pretty interesting bits of web technology that is taken for granted today.
   
  ### The HTML files
   Pretty simple. Nothing special, except a coupe forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
