@@ -73,6 +73,13 @@ def mat_to_image(mat):
     return image
 
 
+# Converts OpenCV mat to PIL Image object, preserves transparency
+def mat_to_image_trans(mat):
+    mat = cv.cvtColor(mat, cv.COLOR_BGRA2RGBA)  # Colour space adjustment
+    image = Image.fromarray(mat)  # Conversion to PIL Image
+    return image
+
+
 # Clears session values
 def clear_session():
     session["input_file"] = None
@@ -125,7 +132,7 @@ def upload_file():
         session["selection"] = None
         mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
         # Convert output to Image for session, bytes for HTML
-        img_out = mat_to_image(mat_out)
+        img_out = mat_to_image_trans(mat_out)
         session["output_img"] = img_out
         encoded_output = image_to_encoded_bytes(img_out)
         # Get encoded input bytes for HTML
