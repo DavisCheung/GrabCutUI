@@ -9,16 +9,16 @@
     <body style="text-align: center">
         <h1>GrabCutWeb</h1>
         <p>After making your selection, please press [Process Image]</p>
-        <p>Note that it may take a moment to process the image</p>
+        <p>Larger images may take a long time to process</p>
         <div class="imgPreview">
             <div style="text-align: center">
-                <canvas id="selection" class="data:image/jpeg;base64,{{ img_data }}" style="max-width: 600px"  width="{{imgwidth}}" height="{{imgheight}}"></canvas>
-                <img src="data:image/jpeg;base64,{{ out_data }}" style="max-width: 600px" alt="output" id="output">
+                <canvas id="selection" class="data:image/png;base64,{{ img_data }}" style="max-width: 600px"  width="{{imgwidth}}" height="{{imgheight}}"></canvas>
+                <img src="data:image/png;base64,{{ out_data }}" style="max-width: 600px" alt="output" id="output">
             </div>
         </div>
         <div>
-            <button><a class="btn" style="color: black" onclick=returnSelection()>Process Image</a></button>
-            <button><a class="btn" style="color: black" href="/download">Download</a></button>
+            <a><button class="btn" style="color: black" onclick=returnSelection()>Process Image</button></a>
+            <a href="/download"><button class="btn" style="color: black">Download</button></a>
         </div>
     </body>
     <footer style="text-align: center">

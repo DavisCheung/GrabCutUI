@@ -17,14 +17,14 @@ from flask_session import Session
 from PIL import Image
 
 ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg"])
-INPUT_NAME = "input_image.jpeg"
-OUTPUT_NAME = "output_image.jpeg"
+INPUT_NAME = "input_image.png"
+OUTPUT_NAME = "output_image.png"
 
 random_key = os.urandom(12)
 
 app = Flask(__name__)
 app.secret_key = random_key
-app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
@@ -58,10 +58,10 @@ def generate_placeholder(image):
     return ph_img
 
 
-# Converts an Image object to encoded byte data (jpeg format)
+# Converts an Image object to encoded byte data (png format)
 def image_to_encoded_bytes(image):
     byte_data = io.BytesIO()
-    image.save(byte_data, "jpeg")
+    image.save(byte_data, "png")
     encoded_bytes = base64.b64encode(byte_data.getvalue())
     return encoded_bytes
 
@@ -148,11 +148,11 @@ def download():
     if session.get("output_img") != None:  # If an output exists in the session
         out_data = io.BytesIO()
         dl_copy = session["output_img"]
-        dl_copy.save(out_data, "jpeg")
+        dl_copy.save(out_data, "png")
         out_data.seek(0)
         return send_file(
             out_data,
-            mimetype="image/jpeg",
+            mimetype="image/png",
             as_attachment=True,
             attachment_filename="output_image",
         )
