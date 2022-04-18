@@ -131,6 +131,7 @@ def upload_file():
 @app.route("/download")
 def download():
     out_data = io.BytesIO()
+    global dl_copy
     dl_copy.save(out_data, "png")
     out_data.seek(0)
     return send_file(out_data, mimetype="image/png", as_attachment=True, attachment_filename="output_image")
