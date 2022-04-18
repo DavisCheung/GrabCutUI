@@ -12,8 +12,8 @@
         <p>Note that it may take a moment to process the image</p>
         <div class="imgPreview">
             <div>
-                <canvas id="selection" class="data:image/png;base64,{{ img_data }}" width="{{imgwidth}}" height="{{imgheight}}"></canvas>
-                <img src="data:image/png;base64,{{ out_data }}" alt="output" id="output">
+                <canvas id="selection" class="data:image/png;base64,{{ img_data }}" style="max-width: 600px" width="{{imgwidth}}" height="{{imgheight}}"></canvas>
+                <img id="outImg" src="data:image/png;base64,{{ out_data }}" style="max-width: 600px" alt="output" id="output">
             </div>
         </div>
         <div>

@@ -55,14 +55,21 @@ $(function(){
     image = new Image();
     image.onload = function () {
     }
+    image.id = "inImg";
     image.src = document.getElementById('selection').className; // An abosolutely disgustingly hacky way to pass a Jinja variable.
                                                                 // If you are a prospective employer reading this, it's VERY EARLY in the morning
                                                                 // and I am about to lose my mind passing an image through JS to a canvas
-    // creating canvas and context objects
+                                                                // creating canvas and context objects
+    image.style = "max-width: 600px";
+    defSelW = document.getElementById('selection').width;
+    defSelh = document.getElementById('selection').height;
     canvas = document.getElementById('selection');
     ctx = canvas.getContext('2d');
     // create initial selection
-    theSelection = new Selection(50, 50, 50, 50);
+    //theSelection = new Selection(50, 50, 50, 50);
+    theSelection = new Selection(defSelW/50, defSelW/50, defSelW/4, defSelh/4);
+    theSelection.csize = document.getElementById('selection').width / 70;
+    theSelection.csizeh = document.getElementById('selection').width / 50;
     $('#selection').mousemove(function(e) { // binding mouse move event
         var canvasOffset = $(canvas).offset();
         iMouseX = Math.floor(e.pageX - canvasOffset.left);
