@@ -56,20 +56,14 @@ def generate_placeholder(image):
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":
-        print("Post seen")
-        '''
-        # Check if post request has the file part
-        if "file" not in request.files:
-            flash("No file part")
-            return redirect(request.url)
-        file = request.files["file"]
-        # Submits empty part w/o filename
-        if file.filename == "":
-            flash("No selected file")
-            return redirect(request.url)
-        '''
         if request.files:
+            if "file" not in request.files:
+                flash("No file part")
+                return redirect(request.url)
             file = request.files["file"]
+            if file.filename == "":
+                flash("No selected file")
+                return redirect(request.url)
             if file and allowed_file(file.filename):
                 # For HTML
                 image = Image.open(file)
@@ -96,7 +90,7 @@ def upload_file():
             h_sel = int(request.form["hSel"])
             session["selection"] = (x_pos, y_pos, w_sel, h_sel)
             return "Got pos values"
-    elif session.get("input_file") != None:
+    elif session.get("input_file") != None and session.get("selection") != None:
         # Open input image, convert to array, run it through algorithm
         img_in = session["input_file"]
         mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
@@ -121,16 +115,17 @@ def upload_file():
         session["output_img"] = img_out
         return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
     else:
-        print("no file")
         return render_template("index.html")
 
 @app.route("/download")
 def download():
-    out_data = io.BytesIO()
-    dl_copy = session["output_img"]
-    dl_copy.save(out_data, "png")
-    out_data.seek(0)
-    return send_file(out_data, mimetype="image/png", as_attachment=True, attachment_filename="output_image")
+    if session.get("output_img") != None:
+        out_data = io.BytesIO()
+        dl_copy = session["output_img"]
+        dl_copy.save(out_data, "png")
+        out_data.seek(0)
+        return send_file(out_data, mimetype="image/png", as_attachment=True, attachment_filename="output_image")
+    return ('', 204)
 
 if __name__ == "__main__":
     app.run()

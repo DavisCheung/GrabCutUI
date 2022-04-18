@@ -14,7 +14,7 @@ class GrabCutApp:
         # Initialize selection
         self.selection = sel_in
 
-        print(self.selection)
+        # print(self.selection)
 
         try:
             # Internally-used arrays in algorithm
