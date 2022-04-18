@@ -22,7 +22,7 @@ OUTPUT_NAME = "output_image.png"
 
 app = Flask(__name__)
 app.secret_key = "1738thek1y"
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SESSION_TYPE"] = "filesystem"
 
