@@ -36,18 +36,20 @@
 ## The Project, but with Feeling
  Here, I'll explain the project in-depth by file
 ### GrabCutUI.py
- This is the original project, what used to be a simple python script (still in the code, just commented out) that built a simple OpenCV UI out of the demo (source at bottom) for GrabCut on the OpenCV wiki. Basically it:
+ This is the original project, what used to be a simple python script that built a simple OpenCV UI out of the demo (source at bottom) for GrabCut on the OpenCV wiki. Basically it:
  - Takes in an image and selection frame
  - Generates a masking layer (like what you use in Photoshop)
  - Generates two matrices
  - Throws everything into a method call, which runs the actual algorithm and returns a processed mask
  - Multiplies the outputted image with the mask to generate an image with the desired object removed from its background
+ - Splices out the background through colour channel manipulation
 
  It's relatively simple code-wise, but the algorithm is much more interesting conceptually.
  It basically takes the image and selection frame, and makes a graph (represented by an array) of its pixels with edges corresponding to adjacent pixels.
  It then makes a number of iterative cuts to the graph, seperating sections of the image into essentially "background" and "foreground" regions, a processed which is repeated some user-determiend number of times to produce a mask of approximately where the algorithm "thinks" the background of the image is.
  This mask can then be multiplied via scalar multiplication with the original image to produce the new, "cut-out" image.
- Of course, a lot of the high-level concepts (and subsequently much of the actual meat of the algorithm) is hidden in the paper behind complex equations, but the general idea is pretty interesting
+ Of course, a lot of the high-level concepts (and subsequently much of the actual meat of the algorithm) is hidden in the paper behind complex equations, but the general idea is pretty 
+ The only other interesting thing it does is convert the image to a 4-channel .png, with the 4th channel being alpha for transparency (the 3 channels are what people mean when they refer to RGB or BGR colour spaces)
  
  ### GrabCutWeb.py
   This file contains all of the Flask API calls for all intents and purposes is basically the App itself. It's responsible for taking in user uploads, storing them in memory/session, and converting them to an array format usable by OpenCV. It also routes page requests, handles jQuery requests, and sends Jinja variables to the two HTML pages for front-end use.
