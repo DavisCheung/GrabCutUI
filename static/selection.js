@@ -70,7 +70,7 @@ $(function(){
     image.onload = function () {
     }
     image.id = "inImg";
-    image.src = document.getElementById('selection').className; // An abosolutely disgustingly hacky way to pass a Jinja variable.
+    image.src = document.getElementById('selection').className; // An absolutely disgustingly hacky way to pass a Jinja variable.
                                                                 // If you are a prospective employer reading this, I promise I won't
                                                                 //   write such code in the future
     image.style = "max-width: 600px";

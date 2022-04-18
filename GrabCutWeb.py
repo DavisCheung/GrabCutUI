@@ -24,7 +24,7 @@ random_key = os.urandom(12)
 
 app = Flask(__name__)
 app.secret_key = random_key
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 4 * 1024 * 1024
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
@@ -122,7 +122,6 @@ def upload_file():
         selection = session["selection"]
         img_in = session["input_file"]
         mat_in = image_to_mat(img_in)
-        session["input_file"] = None  # Clear input from session
         session["selection"] = None
         mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
         # Convert output to Image for session, bytes for HTML
