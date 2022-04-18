@@ -86,7 +86,7 @@ def upload_file():
 
                 encoded_image = base64.b64encode(img_data.getvalue())
                 encoded_output = base64.b64encode(ph_data.getvalue())
-                return render_template("preview.html", pv=1, img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
+                return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
         
         if int(request.form["xPos"]) > 0:
             # Receive and convert jQuery values for selection
@@ -98,9 +98,32 @@ def upload_file():
             selection = (x_pos, y_pos, w_sel, h_sel)
             global file_processed
             file_processed = True
-            return None
+            # Open input image, convert to array, run it through algorithm
+            global image_file
+            img_in = image_file
+            mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
+            mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
+            # Convert output back to PIL Image
+            mat_out = cv.cvtColor(mat_out, cv.COLOR_BGR2RGB)
+            img_out = Image.fromarray(mat_out)
+            out_data = io.BytesIO()
+            img_out.save(out_data, "png")
+            encoded_output = base64.b64encode(out_data.getvalue())
+
+            # Get encoded input
+            in_data = io.BytesIO()
+            img_in.save(in_data, "png")
+            encoded_image = base64.b64encode(in_data.getvalue())
+            img_width = img_in.width
+            img_height = img_in.height
+
+            # For download
+            global dl_copy
+            dl_copy = img_out
+            return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
     elif file_processed:
         # Open input image, convert to array, run it through algorithm
+        global image_file
         img_in = image_file
         mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
         mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
