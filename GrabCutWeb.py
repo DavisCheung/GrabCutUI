@@ -1,9 +1,5 @@
 import base64
-import fileinput
-from genericpath import exists
 import io
-import os
-import shutil
 import GrabCutUI
 import numpy as np
 import cv2 as cv
@@ -14,7 +10,6 @@ from flask import (
     request,
     redirect,
     send_file,
-    url_for,
     session,
 )
 from flask_session import Session
