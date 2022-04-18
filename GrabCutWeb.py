@@ -1,4 +1,5 @@
 import base64
+import os
 import io
 import GrabCutUI
 import numpy as np
@@ -16,14 +17,14 @@ from flask_session import Session
 from PIL import Image
 
 ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg"])
-UPLOAD_FOLDER = "static/uploads/"
-INPUT_NAME = "input_image.png"
-OUTPUT_NAME = "output_image.png"
+INPUT_NAME = "input_image.jpeg"
+OUTPUT_NAME = "output_image.jpeg"
+
+random_key = os.urandom(12)
 
 app = Flask(__name__)
-app.secret_key = "1738thek1y"
+app.secret_key = random_key
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
@@ -34,17 +35,50 @@ def allowed_file(filename):
 
 
 # Converts a file to an OpenCV mat
-def file_to_img(file):
+def file_to_mat(file):
     pil_image = Image.open(file)
     numpy_image = np.array(pil_image)
-    img = cv.cvtColor(numpy_image, cv.COLOR_RGB2BGR)
-    return img
+    mat = cv.cvtColor(numpy_image, cv.COLOR_RGB2BGR)
+    return mat
+
+
+# Converts a PIL Image to an OpenCV mat
+def image_to_mat(image):
+    numpy_image = np.array(image)
+    mat = cv.cvtColor(numpy_image, cv.COLOR_RGB2BGR)
+    return mat
+
 
 # Creates a placeholder image mat given an image
 def generate_placeholder(image):
-    img_mat = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)  # Convert directly to mat to get dimensions
+    img_mat = cv.cvtColor(
+        np.array(image), cv.COLOR_RGB2BGR
+    )  # Convert directly to mat to get dimensions
     ph_img = Image.new("RGB", (img_mat.shape[1], img_mat.shape[0]))
     return ph_img
+
+
+# Converts an Image object to encoded byte data (jpeg format)
+def image_to_encoded_bytes(image):
+    byte_data = io.BytesIO()
+    image.save(byte_data, "jpeg")
+    encoded_bytes = base64.b64encode(byte_data.getvalue())
+    return encoded_bytes
+
+
+# Converts OpenCV mat to PIL Image object
+def mat_to_image(mat):
+    mat = cv.cvtColor(mat, cv.COLOR_BGR2RGB)  # Colour space adjustment
+    image = Image.fromarray(mat)  # Conversion to PIL Image
+    return image
+
+
+# Clears session values
+def clear_session():
+    session["input_file"] = None
+    session["output_img"] = None
+    session["selection"] = None
+    return None
 
 
 # Index page
@@ -63,20 +97,17 @@ def upload_file():
                 # For HTML
                 image = Image.open(file)
                 output_img = generate_placeholder(image)
-                img_data = io.BytesIO()
-                ph_data = io.BytesIO()
-                image.save(img_data, "png")
-                output_img.save(ph_data, "png")
+                encoded_input = image_to_encoded_bytes(image)  # Input image
+                encoded_output = image_to_encoded_bytes(output_img)  # Placeholder image
+                session["input_file"] = image  # Session copy of input image
+                return render_template(
+                    "preview.html",
+                    img_data=encoded_input.decode("utf-8"),
+                    out_data=encoded_output.decode("utf-8"),
+                    imgwidth=image.width,
+                    imgheight=image.height,
+                )
 
-                session["input_file"] = image
-
-                img_width = image.width
-                img_height = image.height
-
-                encoded_image = base64.b64encode(img_data.getvalue())
-                encoded_output = base64.b64encode(ph_data.getvalue())
-                return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
-        
         if int(request.form["xPos"]) > 0:
             # Receive and convert jQuery values for selection
             x_pos = int(request.form["xPos"])
@@ -84,43 +115,49 @@ def upload_file():
             w_sel = int(request.form["wSel"])
             h_sel = int(request.form["hSel"])
             session["selection"] = (x_pos, y_pos, w_sel, h_sel)
-            return "Got pos values"
+            return "Got pos values"  # Not actually used as only occurs on POST handle
+
     elif session.get("input_file") != None and session.get("selection") != None:
         # Open input image, convert to array, run it through algorithm
-        img_in = session["input_file"]
-        mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
         selection = session["selection"]
-        session["input_file"] = None
+        img_in = session["input_file"]
+        mat_in = image_to_mat(img_in)
+        session["input_file"] = None  # Clear input from session
+        session["selection"] = None
         mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
-        # Convert output back to PIL Image
-        mat_out = cv.cvtColor(mat_out, cv.COLOR_BGR2RGB)
-        img_out = Image.fromarray(mat_out)
-        out_data = io.BytesIO()
-        img_out.save(out_data, "png")
-        encoded_output = base64.b64encode(out_data.getvalue())
-
-        # Get encoded input
-        in_data = io.BytesIO()
-        img_in.save(in_data, "png")
-        encoded_image = base64.b64encode(in_data.getvalue())
-        img_width = img_in.width
-        img_height = img_in.height
-
-        # For download
+        # Convert output to Image for session, bytes for HTML
+        img_out = mat_to_image(mat_out)
         session["output_img"] = img_out
-        return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
+        encoded_output = image_to_encoded_bytes(img_out)
+        # Get encoded input bytes for HTML
+        encoded_image = image_to_encoded_bytes(img_in)
+        return render_template(
+            "preview.html",
+            img_data=encoded_image.decode("utf-8"),
+            out_data=encoded_output.decode("utf-8"),
+            imgwidth=img_in.width,
+            imgheight=img_in.height,
+        )
     else:
+        clear_session()
         return render_template("index.html")
+
 
 @app.route("/download")
 def download():
-    if session.get("output_img") != None:
+    if session.get("output_img") != None:  # If an output exists in the session
         out_data = io.BytesIO()
         dl_copy = session["output_img"]
-        dl_copy.save(out_data, "png")
+        dl_copy.save(out_data, "jpeg")
         out_data.seek(0)
-        return send_file(out_data, mimetype="image/png", as_attachment=True, attachment_filename="output_image")
-    return ('', 204)
+        return send_file(
+            out_data,
+            mimetype="image/jpeg",
+            as_attachment=True,
+            attachment_filename="output_image",
+        )
+    return ("", 204)
+
 
 if __name__ == "__main__":
     app.run()
