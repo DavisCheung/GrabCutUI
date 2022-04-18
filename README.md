@@ -35,6 +35,7 @@
 - click
 - setuptools
 - flask-session
+
  The project was deployed with Flask using Heroku
 
 ## How to use
