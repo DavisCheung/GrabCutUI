@@ -1,12 +1,15 @@
 // Taken from script-tutorials.com. Adjusted for GrabCutWeb.
 //  Added a function to return selection values by jQuery
-//  Made input image path a constant
-
+//  Made entire file scale with large images (fixes width to 600px max)
+//
+// Whoever wrote this originally did not make it very friendly to edit
+//
 // variables
 var canvas, ctx;
 var image;
 var iMouseX, iMouseY = 1;
 var theSelection;
+var scale = 1; // Scaling factor for images that are too large
 // define Selection constructor
 function Selection(x, y, w, h){
     this.x = x; // initial positions
@@ -26,25 +29,38 @@ function Selection(x, y, w, h){
 Selection.prototype.draw = function(){
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
-    ctx.strokeRect(this.x, this.y, this.w, this.h);
+    xPos = this.x;
+    yPos = this.y;
+    wPos = this.w;
+    hPos = this.h;
+    /*
+    if(this.w > 600){
+        wPos = 600;
+        hPos = this.h / (this.w/wPos);
+        xPos = this.x / (this.w/wPos);
+        yPos = this.y / (this.w/wPos);
+    }*/
+    ctx.strokeRect(xPos, yPos, wPos, hPos);
     // draw part of original image
     if (this.w > 0 && this.h > 0) {
-        ctx.drawImage(image, this.x, this.y, this.w, this.h, this.x, this.y, this.w, this.h);
+        ctx.drawImage(image, xPos*scale, yPos*scale, wPos*scale, hPos*scale, xPos, yPos, wPos, hPos);
     }
     // draw resize cubes
     ctx.fillStyle = '#fff';
-    ctx.fillRect(this.x - this.iCSize[0], this.y - this.iCSize[0], this.iCSize[0] * 2, this.iCSize[0] * 2);
-    ctx.fillRect(this.x + this.w - this.iCSize[1], this.y - this.iCSize[1], this.iCSize[1] * 2, this.iCSize[1] * 2);
-    ctx.fillRect(this.x + this.w - this.iCSize[2], this.y + this.h - this.iCSize[2], this.iCSize[2] * 2, this.iCSize[2] * 2);
-    ctx.fillRect(this.x - this.iCSize[3], this.y + this.h - this.iCSize[3], this.iCSize[3] * 2, this.iCSize[3] * 2);
+    ctx.fillRect(xPos - this.iCSize[0], yPos - this.iCSize[0], this.iCSize[0] * 2, this.iCSize[0] * 2);
+    ctx.fillRect(xPos + wPos - this.iCSize[1], yPos - this.iCSize[1], this.iCSize[1] * 2, this.iCSize[1] * 2);
+    ctx.fillRect(xPos + wPos - this.iCSize[2], yPos + hPos - this.iCSize[2], this.iCSize[2] * 2, this.iCSize[2] * 2);
+    ctx.fillRect(xPos - this.iCSize[3], yPos + hPos - this.iCSize[3], this.iCSize[3] * 2, this.iCSize[3] * 2);
 }
-function drawScene() { // main drawScene function
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // clear canvas
+function drawScene() { // Input preview
+    var ctxWidth = ctx.canvas.width;
+    var ctxHeight = ctx.canvas.height;
+    ctx.clearRect(0, 0, ctxWidth, ctxHeight); // clear canvas
     // draw source image
-    ctx.drawImage(image, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(image, 0, 0, ctxWidth, ctxHeight);
     // and make it darker
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillRect(0, 0, ctxWidth, ctxHeight);
     // draw selection
     theSelection.draw();
 }
@@ -53,14 +69,25 @@ $(function(){
     image = new Image();
     image.onload = function () {
     }
+    image.id = "inImg";
     image.src = document.getElementById('selection').className; // An abosolutely disgustingly hacky way to pass a Jinja variable.
-                                                                // If you are a prospective employer reading this, it's VERY EARLY in the morning
-                                                                // and I am about to lose my mind passing an image through JS to a canvas
-    // creating canvas and context objects
+                                                                // If you are a prospective employer reading this, I promise I won't
+                                                                //   write such code in the future
+    image.style = "max-width: 600px";
+    defSelW = document.getElementById('selection').width;
+    defSelh = document.getElementById('selection').height;
     canvas = document.getElementById('selection');
+    if (defSelW > 600) {  // Image larger than 600px
+        scale = defSelW / 600;
+        canvas.width = 600;
+        canvas.height = canvas.height/scale;
+    }
     ctx = canvas.getContext('2d');
     // create initial selection
     theSelection = new Selection(50, 50, 50, 50);
+    //theSelection = new Selection(defSelW/50, defSelW/50, defSelW/4, defSelh/4);
+    theSelection.csize = document.getElementById('selection').width / 80;
+    theSelection.csizeh = document.getElementById('selection').width / 70;
     $('#selection').mousemove(function(e) { // binding mouse move event
         var canvasOffset = $(canvas).offset();
         iMouseX = Math.floor(e.pageX - canvasOffset.left);
@@ -179,11 +206,11 @@ function returnSelection(){
         async: false,
         type: "POST",
         url: "/",
-        data: {
-            "xPos": theSelection.x,
-            "yPos": theSelection.y,
-            "wSel": theSelection.w,
-            "hSel": theSelection.h,
+        data: {  // Adjust return values to reflect actual size
+            "xPos": theSelection.x*scale,
+            "yPos": theSelection.y*scale,
+            "wSel": theSelection.w*scale,
+            "hSel": theSelection.h*scale,
         },
         dataType: "json",
         success: function(response) {
