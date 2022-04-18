@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="https://unpkg.com/mvp.css">
 <html lang="en">
-    <head>
+    <head style="text-align: center">
         <title>GrabCutWeb</title>
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script src="../static/selection.js"></script>
     </head>
-    <body>
+    <body style="text-align: center">
         <h1>GrabCutWeb</h1>
         <p>After making your selection, please press [Process Image]</p>
         <p>Note that it may take a moment to process the image</p>
         <div class="imgPreview">
-            <div>
-                <canvas id="selection" class="data:image/png;base64,{{ img_data }}" style="max-width: 600px" width="{{imgwidth}}" height="{{imgheight}}"></canvas>
-                <img id="outImg" src="data:image/png;base64,{{ out_data }}" style="max-width: 600px" alt="output" id="output">
+            <div style="text-align: center">
+                <canvas id="selection" class="data:image/jpeg;base64,{{ img_data }}" style="max-width: 600px"  width="{{imgwidth}}" height="{{imgheight}}"></canvas>
+                <img src="data:image/jpeg;base64,{{ out_data }}" style="max-width: 600px" alt="output" id="output">
             </div>
         </div>
         <div>
@@ -21,6 +21,10 @@
             <button><a class="btn" style="color: black" href="/download">Download</a></button>
         </div>
     </body>
-    <p>Created by Davis Cheung - davischeung.com</p>
-    <p>https://github.com/DavisCheung/GrabCutUI/</p>
+    <footer style="text-align: center">
+        <div>
+            <p style="color: white">Created by Davis Cheung - </p><a style="color: white" href="https://davischeung.com">davischeung.com</a>
+            <p><a style="color: white" href="https://github.com/DavisCheung/GrabCutUI/">Repository</a></p>
+        </div>
+    </footer>
 </html>

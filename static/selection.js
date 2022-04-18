@@ -2,8 +2,6 @@
 //  Added a function to return selection values by jQuery
 //  Made input image path a constant
 
-// const INPUT_IMG_SRC = 'data:image/png;base64,{{ img_data }}';
-
 // variables
 var canvas, ctx;
 var image;
