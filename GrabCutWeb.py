@@ -55,6 +55,7 @@ def generate_placeholder(file):
 # Index page
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
+    initialize()
     if request.method == "POST":
         # Check if post request has the file part
         if "file" not in request.files:
@@ -135,3 +136,6 @@ def download():
         return send_file(path, as_attachment=True)
     else:
         return redirect("/")  # Redirect if user shouldn't be here yet
+
+if __name__ == "__main__":
+    app.run()
