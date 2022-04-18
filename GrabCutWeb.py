@@ -39,8 +39,11 @@ def file_to_img(file):
 
 # Clears uploads folder
 def initialize():
-    shutil.rmtree("static/uploads/")
-    os.makedirs("static/uploads/")
+    if exists("static/uploads/"):
+        shutil.rmtree("static/uploads/")
+        os.makedirs("static/uploads/")
+    else:
+        os.makedirs("static/uploads/")
 
 
 initialize()  # Clear previous uploads on launch
