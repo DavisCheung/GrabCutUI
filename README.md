@@ -46,7 +46,7 @@
 
  It's relatively simple code-wise, but the algorithm is much more interesting conceptually.
  It basically takes the image and selection frame, and makes a graph (represented by an array) of its pixels with edges corresponding to adjacent pixels.
- It then makes a number of iterative cuts to the graph, seperating sections of the image into essentially "background" and "foreground" regions, a processed which is repeated some user-determiend number of times to produce a mask of approximately where the algorithm "thinks" the background of the image is.
+ It then makes a number of iterative cuts to the graph, seperating sections of the image into essentially "background" and "foreground" regions, a processed which is repeated some user-determined number of times to produce a mask of approximately where the algorithm "thinks" the background of the image is.
  This mask can then be multiplied via scalar multiplication with the original image to produce the new, "cut-out" image.
  Of course, a lot of the high-level concepts (and subsequently much of the actual meat of the algorithm) is hidden in the paper behind complex equations, but the general idea is pretty 
  The only other interesting thing it does is convert the image to a 4-channel .png, with the 4th channel being alpha for transparency (the 3 channels are what people mean when they refer to RGB or BGR colour spaces)
