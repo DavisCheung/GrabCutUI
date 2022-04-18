@@ -1,4 +1,7 @@
+import base64
+import fileinput
 from genericpath import exists
+import io
 import os
 import shutil
 import GrabCutUI
@@ -36,30 +39,24 @@ def file_to_img(file):
     img = cv.cvtColor(numpy_image, cv.COLOR_RGB2BGR)
     return img
 
-
-# Clears uploads folder
-def initialize():
-    if exists("static/uploads/"):
-        shutil.rmtree("static/uploads/")
-        os.makedirs("static/uploads/")
-    else:
-        os.makedirs("static/uploads/")
-
-
-initialize()  # Clear previous uploads on launch
-
-# Creates a placeholder image mat given an image file
-def generate_placeholder(file):
-    img_mat = file_to_img(file)  # Convert directly to mat to get dimensions
+# Creates a placeholder image mat given an image
+def generate_placeholder(image):
+    img_mat = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)  # Convert directly to mat to get dimensions
     ph_img = Image.new("RGB", (img_mat.shape[1], img_mat.shape[0]))
     return ph_img
 
+def display_new_page(page, input_data, output_date, width, height):
+    return None
+
+global file_processed   # Really dangerous way of doing it, but for the sake of keeping
+file_processed = False  # everything on one page, it's the only way I see it working
 
 # Index page
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
-    initialize()
     if request.method == "POST":
+        print("Post seen")
+        '''
         # Check if post request has the file part
         if "file" not in request.files:
             flash("No file part")
@@ -69,76 +66,74 @@ def upload_file():
         if file.filename == "":
             flash("No selected file")
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            # For HTML
-            image = Image.open(file)
-            filename = INPUT_NAME
-            filename_out = OUTPUT_NAME
-            image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename), "png")
-            output_img = generate_placeholder(file)  # Placeholder for output image
-            output_img.save(
-                os.path.join(app.config["UPLOAD_FOLDER"], filename_out), "png"
-            )
+        '''
+        if request.files:
+            file = request.files["file"]
+            if file and allowed_file(file.filename):
+                # For HTML
+                image = Image.open(file)
+                output_img = generate_placeholder(image)
+                img_data = io.BytesIO()
+                ph_data = io.BytesIO()
+                image.save(img_data, "png")
+                output_img.save(ph_data, "png")
 
-            # For OpenCV
-            # img_test = file_to_img(file)
+                global image_file
+                image_file = image
 
-            """
-            retval, buffer = cv.imencode(
-                ".png", GrabCutUI.GrabCutApp().run(img_test)
-            )
-            response = make_response(buffer.tobytes())
-            response.headers["Content-Type"] = "image/png"
-            """
-            return redirect("/preview")
-            # return render_template("preview.html", imagename=filename, outname=filename_out, imgwidth=img_width, imgheight=img_height)
+                img_width = image.width
+                img_height = image.height
 
-    return render_template("index.html")
-
-
-@app.route("/preview", methods=["GET", "POST"])
-def preview():
-    if request.method == "POST":
-        # Receive and convert jQuery values for selection
-        x_pos = int(request.form["xPos"])
-        y_pos = int(request.form["yPos"])
-        w_sel = int(request.form["wSel"])
-        h_sel = int(request.form["hSel"])
+                encoded_image = base64.b64encode(img_data.getvalue())
+                encoded_output = base64.b64encode(ph_data.getvalue())
+                return render_template("preview.html", pv=1, img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
+        
+        if int(request.form["xPos"]) > 0:
+            # Receive and convert jQuery values for selection
+            global selection
+            x_pos = int(request.form["xPos"])
+            y_pos = int(request.form["yPos"])
+            w_sel = int(request.form["wSel"])
+            h_sel = int(request.form["hSel"])
+            selection = (x_pos, y_pos, w_sel, h_sel)
+            global file_processed
+            file_processed = True
+            return None
+    elif file_processed:
         # Open input image, convert to array, run it through algorithm
-        img_in = Image.open(os.path.join(app.config["UPLOAD_FOLDER"], INPUT_NAME))
-        img_width = img_in.width
-        img_height = img_in.height
+        img_in = image_file
         mat_in = cv.cvtColor(np.array(img_in), cv.COLOR_RGB2BGR)
-        selection: tuple[int] = (x_pos, y_pos, w_sel, h_sel)
         mat_out = GrabCutUI.GrabCutApp.run(GrabCutUI.GrabCutApp, mat_in, selection)
         # Convert output back to PIL Image
         mat_out = cv.cvtColor(mat_out, cv.COLOR_BGR2RGB)
         img_out = Image.fromarray(mat_out)
-        img_out.save(os.path.join(app.config["UPLOAD_FOLDER"], OUTPUT_NAME))
-        return redirect(url_for("preview"))
+        out_data = io.BytesIO()
+        img_out.save(out_data, "png")
+        encoded_output = base64.b64encode(out_data.getvalue())
 
-    if exists(os.path.join(app.config["UPLOAD_FOLDER"], INPUT_NAME)):
-        img_pv = Image.open(os.path.join(app.config["UPLOAD_FOLDER"], INPUT_NAME))
-        img_width = img_pv.width
-        img_height = img_pv.height
-        return render_template(
-            "preview.html",
-            imagename=INPUT_NAME,
-            outname=OUTPUT_NAME,
-            imgwidth=img_width,
-            imgheight=img_height,
-        )
+        # Get encoded input
+        in_data = io.BytesIO()
+        img_in.save(in_data, "png")
+        encoded_image = base64.b64encode(in_data.getvalue())
+        img_width = img_in.width
+        img_height = img_in.height
+
+        # For download
+        global dl_copy
+        dl_copy = img_out
+
+        file_processed = False
+        return render_template("preview.html", img_data=encoded_image.decode("utf-8"), out_data=encoded_output.decode("utf-8"), imgwidth=img_width, imgheight=img_height)
     else:
-        return redirect("/")  # Redirect if user shouldn't be here yet
-
+        print("no file")
+        return render_template("index.html")
 
 @app.route("/download")
 def download():
-    if exists(os.path.join("static/uploads/", OUTPUT_NAME)):
-        path = os.path.join("static/uploads/", OUTPUT_NAME)
-        return send_file(path, as_attachment=True)
-    else:
-        return redirect("/")  # Redirect if user shouldn't be here yet
+    out_data = io.BytesIO()
+    dl_copy.save(out_data, "png")
+    out_data.seek(0)
+    return send_file(out_data, mimetype="image/png", as_attachment=True, attachment_filename="output_image")
 
 if __name__ == "__main__":
     app.run()
