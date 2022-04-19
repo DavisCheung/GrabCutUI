@@ -202,6 +202,8 @@ $(function(){
 // Return selection values by post request to preview page
 // Refresh preview page to update output image
 function returnSelection(){
+    document.getElementById("process").innerHTML = "Processing...";
+    document.getElementById("loader").className = "lds-ellipsis";
     $.ajax({
         async: false,
         type: "POST",
