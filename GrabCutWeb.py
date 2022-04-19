@@ -117,12 +117,12 @@ def upload_file():
 
         if float(request.form["xPos"]) > 0:
             # Receive and convert jQuery values for selection
-            x_pos = int(request.form["xPos"])
-            y_pos = int(request.form["yPos"])
-            w_sel = int(request.form["wSel"])
-            h_sel = int(request.form["hSel"])
+            x_pos = int(float(request.form["xPos"]+""))
+            y_pos = int(float(request.form["yPos"]+""))
+            w_sel = int(float(request.form["wSel"]+""))
+            h_sel = int(float(request.form["hSel"]+""))
             session["selection"] = (x_pos, y_pos, w_sel, h_sel)
-            return "Got pos values"  # Not actually used as only occurs on POST handle
+            return ("", 204)
 
     elif session.get("input_file") != None and session.get("selection") != None:
         # Open input image, convert to array, run it through algorithm
