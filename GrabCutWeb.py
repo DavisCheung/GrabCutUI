@@ -115,7 +115,7 @@ def upload_file():
                     imgheight=image.height,
                 )
 
-        if int(request.form["xPos"]) > 0:
+        if float(request.form["xPos"]) > 0:
             # Receive and convert jQuery values for selection
             x_pos = int(request.form["xPos"])
             y_pos = int(request.form["yPos"])
