@@ -63,7 +63,7 @@
   Pretty simple. Nothing special, except a couple forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
   
  ### Selection.js
-  This file is responsible for enabling user creation of a selection frame, as well as the sending of jQuery data to the front-end by JSON. Much of the code was based on a tutorial file (source at bottom) with a number of modifications to ensure that it functioned with the rest of the code. The selection function in the original GrabCutUI.py was used as a reference to ensure that it didn't break anything.
+  This file is responsible for enabling user creation of a selection frame, as well as the sending of jQuery data to the front-end by JSON. Much of the code was based on a tutorial file (source at bottom) with a number of modifications to ensure that it functioned with the rest of the code, and could be scaled for use with large images.
  
 
 ## Dependencies
