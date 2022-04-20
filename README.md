@@ -87,6 +87,9 @@
 
 ## Sources
 This project was based on the OpenCV tutorial demo for GrabCut.
+
 (https://docs.opencv.org/3.4/d8/d83/tutorial_py_grabcut.html)
+
 JavaScript selection code was based off a cropping tool from script-tutorials.
+
 (https://www.script-tutorials.com/demos/197/index.html)
