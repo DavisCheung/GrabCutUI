@@ -77,9 +77,7 @@
 - gunicorn
 - Werkzeug
 - Jinja2
-- colorama
 - itsdangerous
-- click
 - setuptools
 - flask-session
 
