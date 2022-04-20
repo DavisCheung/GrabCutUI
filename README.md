@@ -17,7 +17,7 @@
    - Actually using web frameworks is deceivingly difficult, as documentation is littered with jargon
  - Sessioning is essential to preserving user input between requests
  - Querying is surprisingly simple and straight-forward
- - A little amount of effort is put into making things can work, but most is put into making sure things don't break
+ - A little amount of effort is put into making things function, but most is put into making sure things don't break
  
 ## Technologies
  The following languages/scripts were needed to make this project:
