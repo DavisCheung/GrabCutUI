@@ -52,8 +52,8 @@
  The only other interesting thing it does is convert the image to a 4-channel .png, with the 4th channel being alpha for transparency (the 3 channels are what people mean when they refer to the RGB colour space, for instance)
  
  ### GrabCutWeb.py
-  This file contains all of the Flask API calls for all intents and purposes is basically the App itself. It's responsible for taking in user uploads, storing them in memory/session, and converting them to an array format usable by OpenCV. It also routes page requests, handles jQuery requests, and sends Jinja variables to the two HTML pages for front-end use.
-  Querying and sessioning enable the project to send information between the front/back-end and store user information between requests, respectively. They're pretty interesting bits of web technology that is taken for granted today.
+  This file contains all of the Flask API calls, and for all intents and purposes is essentially the App itself. It's responsible for taking in user uploads, storing them in memory, and converting them to an array format usable by OpenCV. It also routes page requests, handles jQuery requests, and sends Jinja variables to the two HTML pages for front-end use.
+  Querying and sessioning enable the project to send information between the front and back-end and store user information between requests, respectively. They're pretty interesting bits of web technology that is taken for granted today.
   
  ### The HTML files
   Pretty simple. Nothing special, except a couple forms and Jinja variables, which allow for back-end values to be communicated to the front-end.
